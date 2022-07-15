@@ -111,7 +111,7 @@ version = 2
             Root = ""
             ShimCgroup = ""
           {% if containerd_config_plugins_runtimes_containerd_extra_runtimes is defined %}
-          {{- containerd_config_plugins_runtimes_containerd_extra_runtimes | string | indent(10,false) }} {% endif %}
+          {{- containerd_config_plugins_runtimes_containerd_extra_runtimes | string }} {% endif %}
 
       [plugins."io.containerd.grpc.v1.cri".containerd.untrusted_workload_runtime]
         base_runtime_spec = ""
@@ -137,9 +137,10 @@ version = 2
       [plugins."io.containerd.grpc.v1.cri".registry.headers]
 
       [plugins."io.containerd.grpc.v1.cri".registry.mirrors]
-      {%- if containerd_config_registry_mirorrs is defined -%}
-        {% for key, value in containerd_config_registry_mirorrs.items() %}
-        [plugins."io.containerd.grpc.v1.cri".registry.mirrors."{{ key }}"]
+      {% if containerd_config_registry_mirorrs is defined %}
+        {%- for key, value in containerd_config_registry_mirorrs.items() %}
+
+        {{ ('[plugins."io.containerd.grpc.v1.cri".registry.mirrors."%s"]' % key) | string }}
           endpoint = ["{{ value }}"]
         {% endfor %} {% endif %}
 
